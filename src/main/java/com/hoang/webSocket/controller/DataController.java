@@ -1,32 +1,35 @@
 package com.hoang.webSocket.controller;
 
+import com.hoang.webSocket.market.SSIMarketProvider;
 import com.hoang.webSocket.dto.RestResponseDto;
 
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
 @RestController
-@Validated
+@Slf4j
 @RequestMapping("api/market")
 public class DataController {
 
     RestTemplate restTemplate = new RestTemplate();
+
+    @Autowired
+    SSIMarketProvider ssiMarketProvider;
 
     @GetMapping("info")
     public RestResponseDto<Object> getCodeInfo() {
 
         String data = restTemplate.getForObject("https://api-finfo.vndirect.com.vn/v4/stocks?q=type:IFC,ETF,STOCK~status:LISTED&size=10000",
                 String.class);
-        JSONObject response = new JSONObject(data);
-
-        return new RestResponseDto<>().success(response.getJSONArray("data").toList());
+        String data2 = restTemplate.getForObject("https://iboard.ssi.com.vn/dchart/api/symbols?symbol=ACB", String.class);
+        JSONObject response = new JSONObject(data2);
+        log.info("{}", response);
+        return new RestResponseDto<>().success(response.toMap());
     }
 
     @GetMapping("table/{table}")
@@ -57,4 +60,8 @@ public class DataController {
         return new RestResponseDto<>().badRequest();
     }
 
+//    @PostMapping("synch")
+//    public RestResponseDto<Object> synchData() {
+//
+//    }
 }
