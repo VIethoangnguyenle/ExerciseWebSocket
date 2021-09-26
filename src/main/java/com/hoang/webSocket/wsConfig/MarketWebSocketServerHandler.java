@@ -12,7 +12,7 @@ public class MarketWebSocketServerHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        marketWebSocketServer.removeSession(session);
+        marketWebSocketServer.addSession(session);
     }
 
     @Override
